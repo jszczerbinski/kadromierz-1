@@ -1,25 +1,28 @@
 {
-  "pracownicy": [
+  "employees": [
     {
+      "id": 0,
       "name": "Anna Nowak",
-      "localisation": ["Arkady", "Magnolia", "Pasaż"],
-      "job": "Kucharz",
-      "deal": "Umowa o dzieło"
+      "location": ["Arkady"],
+      "role": "Kucharz",
+      "contract": "Umowa o dzieło"
     },
     {
-      "name": "Anna Nowak",
-      "localisation": ["Arkady", "Magnolia", "Pasaż"],
-      "job": "Kucharz",
-      "deal": "Umowa o dzieło"
+      "id": 1,
+      "name": "Kamil Piątek",
+      "location": ["Arkady", "Magnolia", "Pasaż"],
+      "role": "Kelner",
+      "contract": "Umowa o dzieło"
     },
     {
-      "name": "Anna Nowak",
-      "localisation": ["Arkady", "Magnolia", "Pasaż"],
-      "job": "Kucharz",
-      "deal": "Umowa o dzieło"
+      "id": 2,
+      "name": "Iga Świątek",
+      "location": ["Arkady", "Magnolia", "Pasaż"],
+      "role": "Kucharz",
+      "contract": "Umowa o dzieło"
     }
   ],
-  "warunkiZatrudnienia": ["Umowa o pracę", "Umowa zlecenie", "Umowa o dzieło"],
-  "stanowisko": ["Kucharz", "Kelner", "Pomoc", "Kasjerka", "Sprzątaczka"],
-  "lokalizacja": ["Arkady", "Magnolia", "Pasaż", "Marino", "Korona", "Galeria"]
+  "contract": ["Umowa o pracę", "Umowa zlecenie", "Umowa o dzieło"],
+  "role": ["Kucharz", "Kelner", "Pomoc", "Kasjerka", "Sprzątaczka"],
+  "location": ["Arkady", "Magnolia", "Pasaż", "Marino", "Korona", "Galeria"]
 }

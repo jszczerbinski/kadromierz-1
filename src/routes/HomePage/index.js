@@ -1,26 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import FormControl from "@material-ui/core/FormControl";
-import Input from "@material-ui/core/Input";
 import Navbar from "../../components/Navbar";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Select from "@material-ui/core/Select";
 import Checkbox from "@material-ui/core/Checkbox";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import {
-  pracownicy,
-  warunkiZatrudnienia,
-  stanowisko,
-  lokalizacja,
-} from "../../assets/data.json";
+import { employees, contract, role, location } from "../../assets/data.json";
+
+const initialState = {
+  selectedRoles: [],
+  selectedContracts: [],
+  selectedLocations: [],
+  selectedEmployees: [],
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "selectedRoles":
+      return { ...state, selectedRoles: action.payload };
+    case "selectedContracts":
+      return { ...state, selectedContracts: action.payload };
+    case "selectedLocations":
+      return { ...state, selectedLocations: action.payload };
+    case "selectedEmployees":
+      return { ...state, selectedEmployees: action.payload };
+    default:
+      throw new Error();
+  }
+}
+function sleep(delay = 0) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
+}
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -49,7 +65,13 @@ const useStyles = makeStyles((theme) =>
 
 const HomePage = () => {
   const [open, setOpen] = useState(false);
-  const [personName, setPersonName] = useState([]);
+  // const [personRole, setPersonRole] = useState([]);
+  //const [selectedContracts, setSelectedContracts] = useState([]);
+  // const [selectedRoles, setSelectedRoles] = useState([]);
+  // const [selectedLocations, setSelectedLocations] = useState([]);
+  //  const [people, setPeople] = useState([]);
+  const [openEm, setOpenEm] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const handleOpenModal = () => {
     setOpen(true);
   };
@@ -58,18 +80,53 @@ const HomePage = () => {
   const handleCloseModal = () => {
     setOpen(false);
   };
-  const handleChange = (event) => {
-    setPersonName(event.target.value);
-  };
+  const loading = openEm && state.selectedEmployees.length === 0;
 
-  const topFilms = [
-    { title: "The Shawshank Redemption", year: 1994 },
-    { title: "The Godfather", year: 1972 },
-    { title: "The Godfather: Part II", year: 1974 },
-    { title: "The Dark Knight", year: 2008 },
-    { title: "12 Angry Men", year: 1957 },
-    { title: "Schindler's List", year: 1993 },
-  ];
+  React.useEffect(() => {
+    let active = true;
+
+    if (!loading) {
+      return undefined;
+    }
+
+    (async () => {
+      // const response = await fetch(
+      //   "https://country.register.gov.uk/records.json?page-size=5000"
+      // );
+      // await sleep(1e3); // For demo purposes.
+      //  const countries = await response.json();
+      const { selectedContracts, selectedRoles, selectedLocations } = state;
+      console.log(selectedContracts);
+      console.log(employees);
+      let users = [];
+      const x = employees.filter((em) => {
+        console.log(em.location);
+        console.log(selectedLocations);
+        console.log(
+          selectedLocations.some((v) => em.location.indexOf(v) !== -1)
+        );
+        if (
+          selectedContracts.includes(em.contract) &&
+          selectedRoles.includes(em.role) &&
+          selectedLocations.some((v) => em.location.indexOf(v) !== -1)
+        )
+          return em;
+      });
+      console.log(x);
+
+      if (active) {
+        //   console.log(countries);
+        dispatch({
+          type: "selectedEmployees",
+          payload: x,
+        });
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [loading]);
 
   return (
     <>
@@ -113,8 +170,11 @@ const HomePage = () => {
             variant="outlined"
             limitTags={2}
             size="small"
+            onChange={(event, value) =>
+              dispatch({ type: "selectedRoles", payload: value })
+            }
             // id="multiple-limit-tags"
-            options={stanowisko}
+            options={role}
             // renderTags={(value) => {
             //   return value;
             // }}
@@ -145,9 +205,12 @@ const HomePage = () => {
             multiple
             variant="outlined"
             limitTags={2}
+            onChange={(event, value) =>
+              dispatch({ type: "selectedLocations", payload: value })
+            }
             size="small"
             // id="multiple-limit-tags"
-            options={lokalizacja}
+            options={location}
             // renderTags={(value) => {
             //   return value;
             // }}
@@ -179,11 +242,16 @@ const HomePage = () => {
             variant="outlined"
             limitTags={2}
             size="small"
+            onOpen={() => {
+              setOpenEm(true);
+              dispatch({ type: "selectedEmployees", payload: [] });
+            }}
+            onClose={() => {
+              setOpenEm(false);
+            }}
             // id="multiple-limit-tags"
-            options={pracownicy}
-            // renderTags={(value) => {
-            //   return value;
-            // }}
+            options={state.selectedEmployees}
+            loading={loading}
             renderOption={(option, { selected }) => (
               <React.Fragment>
                 <Checkbox
@@ -213,7 +281,10 @@ const HomePage = () => {
             limitTags={2}
             size="small"
             // id="multiple-limit-tags"
-            options={warunkiZatrudnienia}
+            options={contract}
+            onChange={(event, value) =>
+              dispatch({ type: "selectedContracts", payload: value })
+            }
             // renderTags={(value) => {
             //   return value;
             // }}
@@ -241,7 +312,7 @@ const HomePage = () => {
           />
           <TextField
             id="date"
-            label="Birthday"
+            label="Select date"
             type="date"
             defaultValue="2017-05-24"
             className={classes.textField}
