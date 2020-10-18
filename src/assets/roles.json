@@ -1,0 +1,8 @@
+{
+    "roles": [
+      { "id": "r1", "name": "Kucharz" },
+      { "id": "r2", "name": "Kelner" },
+      { "id": "r3", "name": "Pomoc" },
+      { "id": "r4", "name": "Kasjer" }
+    ]
+  }

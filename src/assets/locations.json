@@ -1,0 +1,10 @@
+{
+  "locations": [
+    { "id": "l1", "name": "Arkady" },
+    { "id": "l2", "name": "Pasaż" },
+    { "id": "l3", "name": "Galeria" },
+    { "id": "l4", "name": "Magnolia" },
+    { "id": "l5", "name": "Korona" },
+    { "id": "l6", "name": "Marino" }
+  ]
+}

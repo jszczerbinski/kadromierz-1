@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useReducer } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -9,33 +9,47 @@ import Navbar from "../../components/Navbar";
 import Checkbox from "@material-ui/core/Checkbox";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { employees, contract, role, location } from "../../assets/data.json";
+import { employees } from "../../assets/employees.json";
+import { contracts } from "../../assets/contracts.json";
+import { roles } from "../../assets/roles.json";
+import { locations } from "../../assets/locations.json";
 
 const initialState = {
+  startDate: "2017-05-03",
+  endDate: "2017-05-03",
   selectedRoles: [],
   selectedContracts: [],
   selectedLocations: [],
+  filterEmployees: employees,
   selectedEmployees: [],
 };
 
 function reducer(state, action) {
   switch (action.type) {
     case "selectedRoles":
-      return { ...state, selectedRoles: action.payload };
+      return {
+        ...state,
+        selectedRoles: action.payload,
+      };
     case "selectedContracts":
       return { ...state, selectedContracts: action.payload };
     case "selectedLocations":
       return { ...state, selectedLocations: action.payload };
+    case "filterEmployees":
+      return { ...state, filterEmployees: action.payload };
     case "selectedEmployees":
+      const selectAll = action.payload.find((x) => x.name === "All");
+      if (selectAll !== undefined) {
+        action.payload = state.filterEmployees;
+      }
       return { ...state, selectedEmployees: action.payload };
+    case "setStartDate":
+      return { ...state, startDate: action.payload };
+    case "setEndDate":
+      return { ...state, endDate: action.payload };
     default:
       throw new Error();
   }
-}
-function sleep(delay = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
 }
 
 const useStyles = makeStyles((theme) =>
@@ -44,34 +58,38 @@ const useStyles = makeStyles((theme) =>
       marginBottom: theme.spacing(3),
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
-      minWidth: 300,
+      minWidth: 200,
       maxWidth: 500,
-    },
-    chips: {
-      display: "flex",
-      flexWrap: "wrap",
-    },
-    chip: {
-      margin: 2,
     },
     modal: {
       maxWidth: "90vw",
     },
-    noLabel: {
-      marginTop: theme.spacing(3),
+    textField: {
+      marginLeft: "10px",
+      [theme.breakpoints.down("sm")]: {
+        marginLeft: 0,
+        marginTop: "5px",
+      },
+    },
+    dataControls: {
+      marginBottom: theme.spacing(3),
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      minWidth: 200,
+      maxWidth: 500,
+      [theme.breakpoints.down("sm")]: {
+        display: "flex",
+        flexDirection: "column",
+      },
     },
   })
 );
 
 const HomePage = () => {
   const [open, setOpen] = useState(false);
-  // const [personRole, setPersonRole] = useState([]);
-  //const [selectedContracts, setSelectedContracts] = useState([]);
-  // const [selectedRoles, setSelectedRoles] = useState([]);
-  // const [selectedLocations, setSelectedLocations] = useState([]);
-  //  const [people, setPeople] = useState([]);
   const [openEm, setOpenEm] = useState(false);
   const [state, dispatch] = useReducer(reducer, initialState);
+
   const handleOpenModal = () => {
     setOpen(true);
   };
@@ -80,54 +98,93 @@ const HomePage = () => {
   const handleCloseModal = () => {
     setOpen(false);
   };
-  const loading = openEm && state.selectedEmployees.length === 0;
+ // const loading = openEm;
 
-  React.useEffect(() => {
-    let active = true;
+  // useEffect(() => {
+  //   let active = true;
+  //   if (!loading) {
+  //     return undefined;
+  //   }
 
-    if (!loading) {
-      return undefined;
-    }
+  //   const { selectedContracts, selectedRoles, selectedLocations } = state;
+  // //  console.log("ro", selectedRoles);
 
-    (async () => {
-      // const response = await fetch(
-      //   "https://country.register.gov.uk/records.json?page-size=5000"
-      // );
-      // await sleep(1e3); // For demo purposes.
-      //  const countries = await response.json();
-      const { selectedContracts, selectedRoles, selectedLocations } = state;
-      console.log(selectedContracts);
-      console.log(employees);
-      let users = [];
-      const x = employees.filter((em) => {
-        console.log(em.location);
-        console.log(selectedLocations);
-        console.log(
-          selectedLocations.some((v) => em.location.indexOf(v) !== -1)
-        );
-        if (
-          selectedContracts.includes(em.contract) &&
-          selectedRoles.includes(em.role) &&
-          selectedLocations.some((v) => em.location.indexOf(v) !== -1)
-        )
-          return em;
-      });
-      console.log(x);
+  //   const filters = [
+  //     ...selectedContracts,
+  //     ...selectedLocations,
+  //     ...selectedRoles,
+  //   ];
+  // //  console.log(filters);
+  //   const selectedPeople = employees.filter((em) => {
+  //     console.log(em.role)
+  //     const combinedEmployeeData = [...em.role, ...em.contract, ...em.location];
 
-      if (active) {
-        //   console.log(countries);
-        dispatch({
-          type: "selectedEmployees",
-          payload: x,
-        });
-      }
-    })();
+  //     if (filters.every((v) => combinedEmployeeData.includes(v))) {
+  //       return em;
+  //     }
+  //   });
 
-    return () => {
-      active = false;
-    };
-  }, [loading]);
+  //   if (active) {
+  //     dispatch({
+  //       type: "filterEmployees",
+  //       payload: selectedPeople,
+  //     });
+  //   }
 
+  //   return () => {
+  //     active = false;
+  //   };
+  // }, [loading]);
+
+  const handleLoadingEmployees = () => {
+    const { selectedContracts, selectedRoles, selectedLocations } = state;
+
+    const filters = [
+      ...selectedContracts,
+      ...selectedLocations,
+      ...selectedRoles,
+    ];
+
+    const selectedPeople = employees.filter((em) => {
+      const combinedEmployeeData = [...em.role, ...em.contract, ...em.location];
+      return filters.every((v) => combinedEmployeeData.includes(v));
+    });
+
+    // if (active) {
+    dispatch({
+      type: "filterEmployees",
+      payload: selectedPeople,
+    });
+    // }
+
+    // return () => {
+    //   active = false;
+    //  };
+  };
+  const handleSubmitForm = () => {
+    setOpenEm(true);
+    const employeesWithoutAll = state.selectedEmployees.filter(
+      (em) => em.id !== 0
+    );
+    employeesWithoutAll.map((employee) => {
+      const emRole = roles.find((filterRole) => filterRole.id === employee.role);
+      employee.role = emRole;
+      const emContract = contracts.find(
+        (filterContract) => filterContract.id === employee.contract
+      );
+      employee.contract = emContract;
+      const emLocations = employee.location.map((loc) =>
+        locations.find((filterLocation) => filterLocation.id === loc)
+      );
+      employee.location = emLocations;
+    });
+
+    console.log("Selected employees", employeesWithoutAll);
+    console.log("Start date", state.startDate);
+    console.log("End date", state.endDate);
+
+    handleCloseModal(true);
+  };
   return (
     <>
       <Navbar
@@ -135,35 +192,46 @@ const HomePage = () => {
         handleCloseModal={handleCloseModal}
       />
       <Dialog
-        //maxWidth="lg"
-
-        //  className={classes.modal}
         open={open}
         onClose={handleCloseModal}
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">Wybierz pracowników</DialogTitle>
         <DialogContent>
-          {/* <FormControl className={classes.formControl}>
-            <InputLabel id="demo-mutiple-checkbox-label">Tag</InputLabel>
-            <Select
-              labelId="demo-mutiple-checkbox-label"
-              id="demo-mutiple-checkbox"
-              multiple
-              value={personName}
-              onChange={handleChange}
-              input={<Input />}
-              renderValue={(selected) => selected.join(", ")}
-              // MenuProps={MenuProps}
-            >
-              {names.map((name) => (
-                <MenuItem key={name} value={name}>
-                  <Checkbox checked={personName.indexOf(name) > -1} />
-                  <ListItemText primary={name} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl> */}
+          <div className={classes.dataControls}>
+            <TextField
+              id="date"
+              label="Select start date"
+              type="date"
+              defaultValue="2017-05-03"
+              onChange={(e, value) =>
+                dispatch({
+                  type: "setStartDate",
+                  payload: e.target.value,
+                })
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              id="date"
+              label="Select end date"
+              type="date"
+              defaultValue={state.startDate}
+              InputProps={{ inputProps: { min: state.startDate } }}
+              onChange={(e, value) =>
+                dispatch({
+                  type: "setEndDate",
+                  payload: e.target.value,
+                })
+              }
+              className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </div>
           <Autocomplete
             className={classes.formControl}
             multiple
@@ -171,26 +239,19 @@ const HomePage = () => {
             limitTags={2}
             size="small"
             onChange={(event, value) =>
-              dispatch({ type: "selectedRoles", payload: value })
+              dispatch({
+                type: "selectedRoles",
+                payload: value.map((val) => val.id),
+              })
             }
-            // id="multiple-limit-tags"
-            options={role}
-            // renderTags={(value) => {
-            //   return value;
-            // }}
+            options={roles}
             renderOption={(option, { selected }) => (
               <React.Fragment>
-                <Checkbox
-                  //  icon={icon}
-                  //   checkedIcon={checkedIcon}
-                  //  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option}
+                <Checkbox checked={selected} />
+                {option.name}
               </React.Fragment>
             )}
-            getOptionLabel={(option) => option}
-            // defaultValue={[top100Films[13], top100Films[12], top100Films[11]]}
+            getOptionLabel={(option) => option.name}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -206,27 +267,20 @@ const HomePage = () => {
             variant="outlined"
             limitTags={2}
             onChange={(event, value) =>
-              dispatch({ type: "selectedLocations", payload: value })
+              dispatch({
+                type: "selectedLocations",
+                payload: value.map((val) => val.id),
+              })
             }
             size="small"
-            // id="multiple-limit-tags"
-            options={location}
-            // renderTags={(value) => {
-            //   return value;
-            // }}
+            options={locations}
             renderOption={(option, { selected }) => (
               <React.Fragment>
-                <Checkbox
-                  //  icon={icon}
-                  //   checkedIcon={checkedIcon}
-                  //  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option}
+                <Checkbox checked={selected} />
+                {option.name}
               </React.Fragment>
             )}
-            getOptionLabel={(option) => option}
-            // defaultValue={[top100Films[13], top100Films[12], top100Films[11]]}
+            getOptionLabel={(option) => option.name}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -241,30 +295,43 @@ const HomePage = () => {
             multiple
             variant="outlined"
             limitTags={2}
+            disableCloseOnSelect
             size="small"
-            onOpen={() => {
-              setOpenEm(true);
-              dispatch({ type: "selectedEmployees", payload: [] });
+            onOpen={ handleLoadingEmployees}
+            onChange={(event, value) => {
+              dispatch({
+                type: "selectedEmployees",
+                payload: value,
+              });
             }}
             onClose={() => {
               setOpenEm(false);
             }}
-            // id="multiple-limit-tags"
-            options={state.selectedEmployees}
-            loading={loading}
-            renderOption={(option, { selected }) => (
-              <React.Fragment>
-                <Checkbox
-                  //  icon={icon}
-                  //   checkedIcon={checkedIcon}
-                  //  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option.name}
-              </React.Fragment>
-            )}
+            noOptionsText="Nie znaleziono pracowników"
+            options={state.filterEmployees}
+            renderOption={(option, { selected }) => {
+              if (state.filterEmployees.length === 1) {
+                dispatch({
+                  type: "filterEmployees",
+                  payload: [],
+                });
+              }
+              const selectFilmIndex = state.selectedEmployees.findIndex(
+                (film) => film.name === "All"
+              );
+              if (selectFilmIndex > -1) {
+                selected = true;
+              }
+              return (
+                <React.Fragment>
+                  <Checkbox
+                    checked={selected}
+                  />
+                  {option.name}
+                </React.Fragment>
+              );
+            }}
             getOptionLabel={(option) => option.name}
-            // defaultValue={[top100Films[13], top100Films[12], top100Films[11]]}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -280,27 +347,20 @@ const HomePage = () => {
             variant="outlined"
             limitTags={2}
             size="small"
-            // id="multiple-limit-tags"
-            options={contract}
+            options={contracts}
             onChange={(event, value) =>
-              dispatch({ type: "selectedContracts", payload: value })
+              dispatch({
+                type: "selectedContracts",
+                payload: value.map((val) => val.id),
+              })
             }
-            // renderTags={(value) => {
-            //   return value;
-            // }}
             renderOption={(option, { selected }) => (
               <React.Fragment>
-                <Checkbox
-                  //  icon={icon}
-                  //   checkedIcon={checkedIcon}
-                  //  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option}
+                <Checkbox checked={selected} />
+                {option.name}
               </React.Fragment>
             )}
-            getOptionLabel={(option) => option}
-            // defaultValue={[top100Films[13], top100Films[12], top100Films[11]]}
+            getOptionLabel={(option) => option.name}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -310,22 +370,13 @@ const HomePage = () => {
               />
             )}
           />
-          <TextField
-            id="date"
-            label="Select date"
-            type="date"
-            defaultValue="2017-05-24"
-            className={classes.textField}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={handleCloseModal}
+            onClick={handleSubmitForm}
             variant="contained"
             color="primary"
+            style={{ color: "white" }}
           >
             Zatwierdź
           </Button>

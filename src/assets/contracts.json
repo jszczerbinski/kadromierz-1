@@ -1,0 +1,8 @@
+{
+    "contracts": [
+      { "id": "c1", "name": "Umowa o pracę" },
+      { "id": "c2", "name": "Umowa o dzieło" },
+      { "id": "c3", "name": "Umowa zlecenie" }
+    ]
+  }
+  
