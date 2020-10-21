@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/kadromierz/static/css/main.4b24c879.chunk.css",
+    "main.js": "/kadromierz/static/js/main.e52fd3a1.chunk.js",
+    "main.js.map": "/kadromierz/static/js/main.e52fd3a1.chunk.js.map",
+    "runtime-main.js": "/kadromierz/static/js/runtime-main.e729c9b0.js",
+    "runtime-main.js.map": "/kadromierz/static/js/runtime-main.e729c9b0.js.map",
+    "static/js/2.a39bded0.chunk.js": "/kadromierz/static/js/2.a39bded0.chunk.js",
+    "static/js/2.a39bded0.chunk.js.map": "/kadromierz/static/js/2.a39bded0.chunk.js.map",
+    "index.html": "/kadromierz/index.html",
+    "precache-manifest.5fe46256803771a573cab92b188736b2.js": "/kadromierz/precache-manifest.5fe46256803771a573cab92b188736b2.js",
+    "service-worker.js": "/kadromierz/service-worker.js",
+    "static/css/main.4b24c879.chunk.css.map": "/kadromierz/static/css/main.4b24c879.chunk.css.map",
+    "static/js/2.a39bded0.chunk.js.LICENSE.txt": "/kadromierz/static/js/2.a39bded0.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.e729c9b0.js",
+    "static/js/2.a39bded0.chunk.js",
+    "static/css/main.4b24c879.chunk.css",
+    "static/js/main.e52fd3a1.chunk.js"
+  ]
+}
