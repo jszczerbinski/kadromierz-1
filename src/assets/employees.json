@@ -2,7 +2,7 @@
   "employees": [
     {
       "id": 0,
-      "name": "All",
+      "name": "Wszyscy",
       "location": ["l1", "l2", "l3", "l4", "l5", "l6"],
       "role": ["r1", "r2", "r3", "r4"],
       "contract": ["c1", "c2", "c3"]
