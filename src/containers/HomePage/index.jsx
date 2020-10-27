@@ -82,6 +82,8 @@ class HomePageContainer extends React.PureComponent {
     // eslint-disable ;[ :D 
     // eslint-disable-next-line
     cloneOfEmployees.map((employee) => {
+      // nie jestem zwolennikiem skracania nazw. Niby jest logiczne od czego ten 'em', ale to może się 
+      // przerodzić z szkodliwy nawyk. 
       const emRole = roles.find(
         (filterRole) => filterRole.id === employee.role[0]
       );
