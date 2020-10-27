@@ -4,8 +4,16 @@ import { locations } from "../../assets/locations.json";
 import { roles } from "../../assets/roles.json";
 import { contracts } from "../../assets/contracts.json";
 import HomePage from "../../views/HomePage";
+// nie widzę lodash w package.json?
 import _ from "lodash";
 
+/*
+Spoko, że wykorzystujesz PureComponent, ale właściwie on mało daje. 
+PureComponent porównuje płytko i w praktyce, dla takich dużych komponentów/kontenerów nijak się nie sprawdza.
+Twoja aplikacja odświeża się przy większości operacji. Dlatego najlepiej korzystać z metod klas shouldComponentUpdate.
+Przy małych projektach może to nie jest tak istotne, ale np nasz flagowy projekt ma +500 komponentów i tam używamy wyłącznie
+komponentów klasowych z pilnowaniem cyklu życia komponentu. 
+*/
 class HomePageContainer extends React.PureComponent {
   constructor() {
     super();
@@ -71,7 +79,7 @@ class HomePageContainer extends React.PureComponent {
     );
 
     const cloneOfEmployees = _.cloneDeep(employeesWithoutAll);
-
+    // eslint-disable ;[ :D 
     // eslint-disable-next-line
     cloneOfEmployees.map((employee) => {
       const emRole = roles.find(
